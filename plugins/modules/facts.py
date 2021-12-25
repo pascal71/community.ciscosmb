@@ -394,17 +394,17 @@ class Interfaces(FactsBase):
         if data:
             self.populate_interfaces_status(data)
 
-        data = self.responses[4]
-        if data:
-            self.populate_interfaces_configuration(data)
+        #data = self.responses[4]
+        #if data:
+        #    self.populate_interfaces_configuration(data)
 
-        data = self.responses[5]
-        if data:
-            self.populate_interfaces_description(data)
+        #data = self.responses[5]
+        #if data:
+        #    self.populate_interfaces_description(data)
 
-        data = self.responses[6]
-        if data:
-            self.populate_neighbors(data)
+        #data = self.responses[6]
+        #if data:
+        #    self.populate_neighbors(data)
 
     def _populate_interfaces_status_interface(self, interface_table):
         interfaces = dict()
@@ -590,8 +590,10 @@ class Interfaces(FactsBase):
         return ips
 
     def populate_addresses_ipv4(self, data):
+
         tables = ciscosmb_split_to_tables(data)
         ip_table = ciscosmb_parse_table(tables[0])
+
 
         ips = self._populate_address_ipv4(ip_table)
         self.facts["all_ipv4_addresses"] = ips

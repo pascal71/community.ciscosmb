@@ -31,6 +31,7 @@ __metaclass__ = type
 
 import json
 import re
+import tempfile
 
 from ansible.module_utils._text import to_text, to_native
 from ansible.module_utils.basic import env_fallback

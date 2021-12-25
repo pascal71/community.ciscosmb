@@ -65,6 +65,12 @@ class TerminalModule(TerminalBase):
         except AnsibleConnectionFailure as e:
             raise_from(AnsibleConnectionFailure("unable to set terminal parameters"), e)
 
+        #self._exec_cli_command(b"enable")
+        #self._exec_cli_command(b"config")
+        #self._exec_cli_command(b"no clipaging")
+        #self._exec_cli_command(b"exit")
+        #self._exec_cli_command(b"exit")
+
         try:
             self._exec_cli_command(b"terminal width 0")
         except AnsibleConnectionFailure:

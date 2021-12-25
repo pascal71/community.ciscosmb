@@ -62,6 +62,8 @@ options:
         trying the command again.
     default: 1
     type: int
+notes:
+  - Supports C(check_mode).
 '''
 
 EXAMPLES = """
@@ -140,7 +142,7 @@ def main():
     argument_spec.update(ciscosmb_argument_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,
-                           supports_check_mode=False)
+                           supports_check_mode=True)
 
     result = {'changed': False}
 

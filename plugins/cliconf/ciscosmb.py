@@ -21,7 +21,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-author: Kjell and Pascal van Dam based on work by Egor Zaitsev (@heuels)
+author: Egor Zaitsev (@heuels), adapted by Kjell and Pascal van Dam
 cliconf: ciscosmb
 short_description: Use ciscosmb cliconf to run command on Cisco SMB network devices
 description:
@@ -113,7 +113,6 @@ class Cliconf(CliconfBase):
 
         results = []
         requests = []
-
 
         if commit:
             self.send_command("configure terminal")

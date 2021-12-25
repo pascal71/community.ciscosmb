@@ -20,17 +20,17 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 DOCUMENTATION = """
 module: ios_system
-author: Kjell and Pascal van Dam based on work by Peter Sprygada (@privateip)
-short_description: Manage the system attributes on Cisco SMB devices
+author: Peter Sprygada (@privateip)
+short_description: Manage the system attributes on Cisco IOS devices
 description:
-- This module provides declarative management of node system attributes on Cisco SMB 
+- This module provides declarative management of node system attributes on Cisco IOS
   devices.  It provides an option to configure host system parameters or remove those
   parameters from the device active configuration.
 version_added: 1.0.0
 extends_documentation_fragment:
-- community.ciscosmb.ios
+- community.ciscosmb
 notes:
-- Tested against SG350 devices
+- Tested against IOS 15.6
 options:
   hostname:
     description:
@@ -81,7 +81,7 @@ options:
 """
 EXAMPLES = """
 - name: configure hostname and domain name
-  community.ciscosmb.ios_system:
+  community.ciscosmb_system:
     hostname: ios01
     domain_name: test.example.com
     domain_search:
@@ -90,16 +90,16 @@ EXAMPLES = """
     - cisco.com
 
 - name: remove configuration
-  community.ciscosmb.ios_system:
+  community.ciscosmb_system:
     state: absent
 
 - name: configure DNS lookup sources
-  community.ciscosmb.ios_system:
+  community.ciscosmb_system:
     lookup_source: MgmtEth0/0/CPU0/0
     lookup_enabled: yes
 
 - name: configure name servers
-  community.ciscosmb.ios_system:
+  community.ciscosmb_system:
     name_servers:
     - 8.8.8.8
     - 8.8.4.4
@@ -370,10 +370,6 @@ def main():
     want = map_params_to_obj(module)
     have = map_config_to_obj(module)
     commands = map_obj_to_commands(want, have, module)
-
-    out = open('/tmp/ios-dbg1.log','a')
-    out.write(commands[0])
-    out.write('\n') 
 
     result["commands"] = commands
     if commands:
