@@ -21,7 +21,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-author: Egor Zaitsev (@heuels)
+author: Kjell and Pascal van Dam based on work by Egor Zaitsev (@heuels)
 cliconf: ciscosmb
 short_description: Use ciscosmb cliconf to run command on Cisco SMB network devices
 description:
@@ -34,6 +34,11 @@ import json
 
 from ansible.module_utils._text import to_text
 from ansible.plugins.cliconf import CliconfBase, enable_mode
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    to_list,
+)
+from ansible.module_utils.common._collections_compat import Mapping
+
 
 
 class Cliconf(CliconfBase):
@@ -62,6 +67,14 @@ class Cliconf(CliconfBase):
 
         return device_info
 
+    def check_device_type(self):
+         device_type = "L2"
+         try:
+             self.get(command="show vlan")
+         except Exception:
+             device_type = "L3"
+         return device_type
+
     @enable_mode
     def get_config(self, source='running', flags=None, format=None):
         if source not in ("running", "startup"):
@@ -86,8 +99,42 @@ class Cliconf(CliconfBase):
 
         return self.send_command(cmd)
 
-    def edit_config(self, command):
-        return
+
+
+    @enable_mode
+    def edit_config(
+        self, candidate=None, commit=True, replace=None, comment=None
+    ):
+        resp = {}
+        operations = self.get_device_operations()
+        self.check_edit_config_capability(
+            operations, candidate, commit, replace, comment
+        )
+
+        results = []
+        requests = []
+
+
+        if commit:
+            self.send_command("configure terminal")
+            for line in to_list(candidate):
+                if not isinstance(line, Mapping):
+                    line = {"command": line}
+
+                cmd = line["command"]
+
+                if cmd != "end" and cmd[0] != "!":
+                    results.append(self.send_command(**line))
+                    requests.append(cmd)
+
+            self.send_command("end")
+        else:
+            raise ValueError("check mode is not supported")
+
+        resp["request"] = requests
+        resp["response"] = results
+
+        return resp
 
     def get(self, command, prompt=None, answer=None, sendonly=False, newline=True, check_all=False):
         return self.send_command(command=command, prompt=prompt, answer=answer, sendonly=sendonly, newline=newline, check_all=check_all)
@@ -95,3 +142,19 @@ class Cliconf(CliconfBase):
     def get_capabilities(self):
         result = super().get_capabilities()
         return json.dumps(result)
+
+    def get_device_operations(self):
+        return {
+            "supports_diff_replace": True,
+            "supports_commit": False,
+            "supports_rollback": False,
+            "supports_defaults": True,
+            "supports_onbox_diff": False,
+            "supports_commit_comment": False,
+            "supports_multiline_delimiter": True,
+            "supports_diff_match": True,
+            "supports_diff_ignore_lines": True,
+            "supports_generate_diff": True,
+            "supports_replace": False,
+        }
+
