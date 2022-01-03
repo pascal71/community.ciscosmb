@@ -90,6 +90,10 @@ class L2_InterfacesFacts(object):
         :returns: The generated config
         """
         config = deepcopy(spec)
+
+        of = open("/tmp/facts_l2_interfaces.log","a")
+        of.write("Conf: %s\n" % conf)
+
         match = re.search(r"^(\S+)", conf)
         intf = match.group(1)
 

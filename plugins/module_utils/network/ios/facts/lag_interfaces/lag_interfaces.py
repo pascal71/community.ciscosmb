@@ -59,7 +59,7 @@ class Lag_interfacesFacts(object):
         objs = []
 
         if not data:
-            data = connection.get("show running-config | section ^interface")
+            data = connection.get("show running-config | begin ^interface")
         # operate on a collection of resource x
         config = ("\n" + data).split("\ninterface ")
         for conf in config:
@@ -101,6 +101,10 @@ class Lag_interfacesFacts(object):
         :returns: The generated config
         """
         config = deepcopy(spec)
+
+        of = open("/tmp/facts_lag.log","a")
+        of.write("Conf: %s\n" % conf)
+
         match = re.search(r"^(\S+)", conf)
         intf = match.group(1)
 
